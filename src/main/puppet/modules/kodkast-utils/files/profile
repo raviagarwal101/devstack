@@ -1,0 +1,69 @@
+# System-wide .profile for sh(1)
+
+if [ -x /usr/libexec/path_helper ]; then
+	eval `/usr/libexec/path_helper -s`
+fi
+
+if [ "${BASH-no}" != "no" ]; then
+	[ -r /etc/bashrc ] && . /etc/bashrc
+fi
+
+if [ -e /etc/profile.d/utils.profile ]; then
+    . /etc/profile.d/utils.profile
+fi
+
+if [ -e /etc/profile.d/maven.profile ]; then
+    . /etc/profile.d/maven.profile
+fi
+
+if [ -e /etc/profile.d/ant.profile ]; then
+    . /etc/profile.d/ant.profile
+fi
+
+if [ -e /etc/profile.d/hadoop.profile ]; then
+    . /etc/profile.d/hadoop.profile
+fi
+
+if [ -e /etc/profile.d/hive.profile ]; then
+    . /etc/profile.d/hive.profile
+fi
+
+if [ -e /etc/profile.d/zookeeper.profile ]; then
+    . /etc/profile.d/zookeeper.profile
+fi
+
+if [ -e /etc/profile.d/mysql.profile ]; then
+    . /etc/profile.d/mysql.profile
+fi
+
+if [ -e /etc/profile.d/svn.profile ]; then
+    . /etc/profile.d/svn.profile
+fi
+
+if [ -e /etc/profile.d/postgresql.profile ]; then
+    . /etc/profile.d/postgresql.profile
+fi
+
+if [ -e /etc/profile.d/raster.profile ]; then
+    . /etc/profile.d/raster.profile
+fi
+
+if [ -e /etc/profile.d/mercurial.profile ]; then
+    . /etc/profile.d/mercurial.profile
+fi
+
+if [ -e /etc/profile.d/go.profile ]; then
+    . /etc/profile.d/go.profile
+fi
+
+if [ -e /etc/profile.d/packer.profile ]; then
+    . /etc/profile.d/packer.profile
+fi
+
+if [ -e /etc/profile.d/tomcat.profile ]; then
+    . /etc/profile.d/tomcat.profile
+fi
+
+if [ -e /etc/profile.d/qpid.profile ]; then
+    . /etc/profile.d/qpid.profile
+fi

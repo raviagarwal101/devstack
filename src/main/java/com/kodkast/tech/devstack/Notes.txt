@@ -1,0 +1,15 @@
+
+Devstack
+
+- get me a machine X
+    - configured with x mem, y hostname, etc
+    - installed with stack ZZZ
+
+- install stack ZZZ on machine X
+
+- start, stop, check stack ZZZ on machine X
+
+- start machine X
+- stop machine X
+- check machine X
+- destroy machine X

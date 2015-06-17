@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ $# -eq 2 ]; then
+    path=$1;
+    searchTerm="*"$2"*";
+elif [ $# -eq 1 ]; then
+    path=$1;
+    searchTerm="*";
+else
+    path=".";
+    searchTerm="*";
+fi
+
+lastChar=`echo $path | sed -e "s/^.*\(.\)$/\1/"`;
+if [ $lastChar == "/" ]; then
+    path="${path%?}"
+fi
+
+echo "searching $searchTerm in $path";
+find $path -name "$searchTerm" -type f | grep -v ".svn"

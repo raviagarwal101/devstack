@@ -1,0 +1,65 @@
+#
+# Virtual Hosts with different apps running on different ports
+#
+# If you want to maintain multiple domains/hostnames on your
+# machine you can setup VirtualHost containers for them. Most configurations
+# use only name-based virtual hosts so the server doesn't need to worry about
+# IP addresses. This is indicated by the asterisks in the directives below.
+#
+# Please see the documentation at 
+# <URL:http://httpd.apache.org/docs/2.2/vhosts/>
+# for further details before you try to setup virtual hosts.
+#
+# You may use the command line option '-S' to verify your virtual host
+# configuration.
+
+
+Listen <%= @webapp_apache_port %>
+
+#
+# Use name-based virtual hosting.
+#
+
+NameVirtualHost *:<%= @webapp_apache_port %>
+
+#
+# VirtualHost example:
+# Almost any Apache directive may go into a VirtualHost container.
+# The first VirtualHost section is used for all requests that do not
+# match a ServerName or ServerAlias in any <VirtualHost> block.
+#
+<VirtualHost *:<%= @webapp_apache_port %>>
+
+    ServerAdmin webmaster@<%= @webapp_hostname %>
+    ServerName <%= @webapp_hostname %>
+    ServerAlias <%= @webapp_hostname %>
+    MIMEMagicFile /dev/null
+    ErrorLog "/private/var/log/apache2/<%= @webapp_hostname %>-error_log"
+    CustomLog "/private/var/log/apache2/<%= @webapp_hostname %>-access_log" common
+
+    SetEnv RASTER_HOME /var/lib/raster/raster-1.0.0
+
+    DocumentRoot "<%= @webapp_document_root %>"
+    <Directory "<%= @webapp_document_root %>/">
+        Options +Indexes +FollowSymLinks
+        Order allow,deny
+        Allow from all
+        AllowOverride All
+    </Directory>
+
+    Alias /repo/css "<%= @webapp_document_root %>/repo/css"
+    Alias /repo/js "<%= @webapp_document_root %>/repo/js"
+    Alias /repo/img "<%= @webapp_document_root %>/repo/img"
+
+    RewriteEngine   On
+    RewriteCond %{REQUEST_URI}!(repo/css|repo/js|repo/img)  [NC]
+    RewriteRule ^/(.*) /var/lib/raster/raster-1.0.0/index.php
+
+    <ifmodule mod_expires.c>
+        <filesmatch "\.(jpg|JPG|gif|GIF|png|css|ico|js)$">
+            ExpiresActive on
+            ExpiresDefault "access plus 7 day"
+        </filesmatch>
+    </ifmodule>
+
+</VirtualHost>

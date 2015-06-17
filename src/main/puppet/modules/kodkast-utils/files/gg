@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ $# -eq 2 ]; then
+    searchTerm=$1;
+    path=$2;
+elif [ $# -eq 1 ]; then
+    searchTerm=$1;
+    path="*";
+else
+    echo "gg <path> <query>";
+    exit;
+fi
+
+echo "searching for text $searchTerm in $path";
+grep "$searchTerm" -r "$path" | grep -v ".svn";

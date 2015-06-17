@@ -1,0 +1,50 @@
+#!/bin/bash
+
+show_help() {
+    echo "";
+    echo "usage : devstack-vm -a <action> -p <profile-dir>";
+    echo "";
+    echo "where action can be";
+    echo "  create";
+    echo "  delete";
+    echo "";
+    exit 1;
+}
+
+while getopts a:p: arg
+do
+  case "${arg}" in
+    a) action=$OPTARG;;
+    p) profile_dir=$OPTARG;;
+    *) show_help;;
+  esac
+done
+
+if [ -z $action ] || [ -z $profile_dir ]; then
+    show_help;
+fi
+
+vm_config_file="$profile_dir/vm.conf";
+stack_config_file="$profile_dir/stack.conf";
+
+if [ ! -e $vm_config_file ] || [ ! -e $stack_config_file ]; then
+    echo "config file(s) not found";
+    exit 1;
+fi
+
+DEVSTACK_BIN=$0
+
+if [ -L $DEVSTACK_BIN ]; then
+    DEVSTACK_PATH=`readlink $DEVSTACK_BIN`;
+else
+    DEVSTACK_PATH=$DEVSTACK_BIN;
+fi
+
+BASEDIR=`dirname $DEVSTACK_PATH`;
+DEVSTACK_LIB="$BASEDIR/../lib/devstack.jar";
+DEVSTACK_CLASS="com.kodkast.tech.devstack.bin.VirtualMachineCLI";
+FINAL_ARGS="$action $vm_config_file $stack_config_file";
+
+echo "Executing virtual machine $action";
+
+java -cp $DEVSTACK_LIB $DEVSTACK_CLASS $FINAL_ARGS

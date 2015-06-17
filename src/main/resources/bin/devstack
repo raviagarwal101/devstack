@@ -1,0 +1,89 @@
+#!/bin/bash
+
+if [ $USER != "root" ]; then
+    echo "Devstack can only be run as root, use sudo to run this script";
+    exit;
+fi
+
+show_help() {
+    echo "";
+    echo "usage : devstack.sh <action> [-f <stack-config-file>] [-o <devstack-config-file>] [-d]";
+    echo "";
+    echo "where action can be";
+    echo "  -i (install)";
+    echo "  -s (start)";
+    echo "  -e (stop)";
+    echo "  -r (restart)";
+    echo "  -c (check)";
+    echo "  -l (list installed components)";
+    echo "  -a (list all components)";
+    echo "";
+    exit 1;
+}
+
+while getopts isercladf:o: arg
+do
+  case "${arg}" in
+    i) action="install";;
+    s) action="start";;
+    e) action="stop";;
+    r) action="restart";;
+    c) action="check";;
+    l) action="list";;
+    a) action="list-all";;
+    d) debug="yes";;
+    o) devstack_conf_file=$OPTARG;;
+    f) conf_file=$OPTARG;;
+    *) show_help;;
+  esac
+done
+
+if [ -z $action ]; then
+    show_help;
+fi
+
+if [ -z $conf_file ] && [ "$action" != "list-all" ] && [ "$action" != "list" ]; then
+    show_help
+elif [ ! -e $conf_file ]; then
+    echo "Config file $conf_file not found";
+    exit 1;
+fi
+
+DEVSTACK_BIN=$0
+
+if [ -L $DEVSTACK_BIN ]; then
+    DEVSTACK_PATH=`readlink $DEVSTACK_BIN`;
+else
+    DEVSTACK_PATH=$DEVSTACK_BIN;
+fi
+
+BASEDIR=`dirname $DEVSTACK_PATH`;
+DEVSTACK_LIB="$BASEDIR/../lib/devstack.jar";
+DEVSTACK_CLASS="com.kodkast.tech.devstack.bin.DevStackCLI";
+FINAL_ARGS="$action $conf_file";
+
+if [ ! -z $devstack_conf_file ] && [ -e $devstack_conf_file ]; then
+    FINAL_ARGS="$FINAL_ARGS $devstack_conf_file";
+else
+    FINAL_ARGS="$FINAL_ARGS default";
+fi
+
+if [ ! -z $debug ]; then
+    FINAL_ARGS="$FINAL_ARGS debug";
+fi
+
+echo "Running $action on stack config $conf_file";
+
+java -cp $DEVSTACK_LIB $DEVSTACK_CLASS $FINAL_ARGS
+
+if [ $? -eq 0 ]; then
+
+    RUN_SCRIPT="/tmp/$action-modules.sh";
+    if [ -e $RUN_SCRIPT ]; then
+        $RUN_SCRIPT
+    fi
+
+else
+    echo "Failed to install given stack config";
+    exit 1;
+fi
